@@ -19,7 +19,8 @@ def scrape_all():
       "news_paragraph": news_paragraph,
       "featured_image": featured_image(browser),
       "facts": mars_facts(),
-      "last_modified": dt.datetime.now()
+      "last_modified": dt.datetime.now(),
+      "hemisphere": {}
     }
     # Stop webdriver and return data
     browser.quit()
@@ -97,11 +98,36 @@ def mars_facts():
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html()
 
+def hemisphere(browser):
+  url = 'https://marshemispheres.com/'
+  browser.visit(url)
+    
+    #find_by_tag('button')[1]
+    #itemLink product-item
+    #<img class="thumb" src="images/39d3266553462198bd2fbc4d18fbed17_cerberus_enhanced.tif_thumb.png">
+    
+    #img_url_name = browser.find_by_tag('itemLink product-item')
+    #brower.find_image
+  img_url_name = browser.find_by_css('a.product-item img') #.get('src')
+  title = browser.find_by_tag('h3').text
+    #title = img_soup.find('img', class_='fancybox-image').get('src')
+    
+  hemisphere_image_urls = []
+    
+  for i in range(len(img_url_name)):
+    hemispheres = {}
+    browser.find_by_css('a.product-item img')[i].click()
+    title_code = browser.links.find_by_text('Sample').first
+    hemispheres['image_url'] = title_code['href']
+    hemispheres['title'] = browser.find_by_css('h2.title').text
+
+    hemisphere_image_urls.append(hemispheres)
+
+    browser.back()
+
+  return hemisphere_image_urls
+
 if __name__ == "__main__":
     # If running as script, print scraped data
     print(scrape_all())
-
-
-
-#browser.quit()
 
